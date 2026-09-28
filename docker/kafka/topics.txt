@@ -1,0 +1,5 @@
+# Topic definitions - single source of truth for topic creation and tests.
+# Format: <name> <partitions> <replication-factor> [<key=value>,...]
+wikimedia.recentchange.raw   6  3  retention.ms=604800000,min.insync.replicas=2
+wikimedia.recentchange.dlq   3  3  retention.ms=1209600000,min.insync.replicas=2
+clickstream.events          12  3  retention.ms=259200000,min.insync.replicas=2
