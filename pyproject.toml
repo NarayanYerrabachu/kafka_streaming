@@ -17,6 +17,7 @@ dev = [
     "pytest>=8",
     "pre-commit>=3.7",
     "ruff>=0.6",
+    "testcontainers[kafka]>=4.9",
 ]
 
 [build-system]
@@ -28,8 +29,11 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-m 'not integration'"
-markers = ["integration: needs the local Docker stack (make up)"]
+addopts = "-m 'not integration and not stack'"
+markers = [
+    "integration: spins up Kafka + Schema Registry with Testcontainers (needs Docker)",
+    "stack: checks the running docker-compose stack (needs `make up`)",
+]
 
 [tool.ruff]
 line-length = 100

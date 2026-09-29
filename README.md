@@ -14,7 +14,8 @@ A local big-data streaming pipeline built on Kafka and Spark Structured Streamin
 make install          # .venv + dev tools + pre-commit hook
 make up               # 3-node Kafka (KRaft), topics, Schema Registry, Kafka UI
 make test             # unit tests
-make test-integration # checks the running stack
+make test-integration # producer/consumer tests on a throwaway Kafka (Testcontainers)
+make test-stack       # checks the running docker-compose stack
 make produce          # stream live Wikipedia edits into Kafka (Ctrl-C to stop)
 make consume          # print them back as they arrive (Ctrl-C to stop)
 make help             # all targets
@@ -53,6 +54,16 @@ Inside Docker, the containers reach the brokers at `kafka-{1,2,3}:19092`.
 | `clickstream.events`         | 12         | Synthetic load-test events     |
 
 All topics use replication factor 3 with `min.insync.replicas=2`, so the cluster keeps accepting writes if one broker goes down.
+
+## Tests
+
+| Command                 | What it does                                                                                        | Needs |
+|-------------------------|-----------------------------------------------------------------------------------------------------|-------|
+| `make test`             | Unit tests: event mapping, schema validation, settings                                             | nothing |
+| `make test-integration` | Starts a single-broker Kafka (KRaft) and Schema Registry with [Testcontainers](https://testcontainers-python.readthedocs.io/), creates the topics from `topics.txt`, then runs the real producer and consumer against them: round-trip, partitioning by wiki, DLQ routing. Containers are removed afterwards. About 30 s. | Docker |
+| `make test-stack`       | Checks the running compose stack: 3 brokers, topic layout, Schema Registry reachable               | `make up` |
+
+The integration tests are self-contained, so they can run in CI without the compose stack.
 
 ## Configuration
 

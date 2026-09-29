@@ -1,7 +1,7 @@
 COMPOSE := docker compose -f docker/docker-compose.yml -p kafka-streaming
 PYTHON  ?= python3
 
-.PHONY: help install up down clean ps logs topics produce consume test test-integration lint
+.PHONY: help install up down clean ps logs topics produce consume test test-integration test-stack lint
 
 help:  ## Show available targets
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-18s %s\n", $$1, $$2}'
@@ -38,8 +38,11 @@ consume:  ## Print events from Kafka as they arrive (Ctrl-C to stop)
 test:  ## Unit tests (no Docker needed)
 	.venv/bin/pytest
 
-test-integration:  ## Tests against the running stack (run `make up` first)
+test-integration:  ## Producer/consumer tests on a throwaway Kafka via Testcontainers (needs Docker only)
 	.venv/bin/pytest -m integration
+
+test-stack:  ## Verify the running docker-compose stack (run `make up` first)
+	.venv/bin/pytest -m stack
 
 lint:  ## Run all pre-commit hooks
 	.venv/bin/pre-commit run --all-files
