@@ -1,7 +1,7 @@
 COMPOSE := docker compose -f docker/docker-compose.yml -p kafka-streaming
 PYTHON  ?= python3
 
-.PHONY: help install up down clean ps logs topics test test-integration lint
+.PHONY: help install up down clean ps logs topics produce consume test test-integration lint
 
 help:  ## Show available targets
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-18s %s\n", $$1, $$2}'
@@ -28,6 +28,12 @@ logs:  ## Follow logs of all services
 
 topics:  ## Describe all topics
 	docker exec ks-kafka-1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:19092 --describe
+
+produce:  ## Stream live Wikipedia edits into Kafka (Ctrl-C to stop)
+	.venv/bin/ks-produce
+
+consume:  ## Print events from Kafka as they arrive (Ctrl-C to stop)
+	.venv/bin/ks-consume
 
 test:  ## Unit tests (no Docker needed)
 	.venv/bin/pytest

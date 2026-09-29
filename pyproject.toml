@@ -5,7 +5,12 @@ description = "Local big-data streaming pipeline: Kafka, Spark Structured Stream
 requires-python = ">=3.11"
 dependencies = [
     "confluent-kafka[avro,schemaregistry]>=2.6",
+    "requests>=2.32",
 ]
+
+[project.scripts]
+ks-produce = "kafka_streaming.producer:main"
+ks-consume = "kafka_streaming.consumer:main"
 
 [project.optional-dependencies]
 dev = [

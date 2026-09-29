@@ -1,0 +1,21 @@
+{
+  "type": "record",
+  "name": "RecentChange",
+  "namespace": "wikimedia",
+  "doc": "One edit/log event from the Wikimedia recentchange stream, trimmed to the fields we analyse.",
+  "fields": [
+    {"name": "event_id", "type": "string", "doc": "meta.id - globally unique, use for dedup"},
+    {"name": "event_time", "type": {"type": "long", "logicalType": "timestamp-millis"}, "doc": "meta.dt"},
+    {"name": "wiki", "type": "string", "doc": "e.g. enwiki"},
+    {"name": "server_name", "type": "string", "doc": "e.g. en.wikipedia.org - used as the Kafka key"},
+    {"name": "type", "type": "string", "doc": "edit | new | log | categorize | external"},
+    {"name": "namespace", "type": "int"},
+    {"name": "title", "type": "string"},
+    {"name": "user", "type": "string"},
+    {"name": "bot", "type": "boolean"},
+    {"name": "minor", "type": ["null", "boolean"], "default": null},
+    {"name": "comment", "type": ["null", "string"], "default": null},
+    {"name": "length_old", "type": ["null", "int"], "default": null},
+    {"name": "length_new", "type": ["null", "int"], "default": null}
+  ]
+}

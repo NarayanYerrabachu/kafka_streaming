@@ -15,8 +15,24 @@ make install          # .venv + dev tools + pre-commit hook
 make up               # 3-node Kafka (KRaft), topics, Schema Registry, Kafka UI
 make test             # unit tests
 make test-integration # checks the running stack
+make produce          # stream live Wikipedia edits into Kafka (Ctrl-C to stop)
+make consume          # print them back as they arrive (Ctrl-C to stop)
 make help             # all targets
 ```
+
+## Producer and consumer
+
+`ks-produce` reads the [Wikimedia recentchange](https://stream.wikimedia.org/v2/stream/recentchange) live feed (about 20–50 events/s), maps each event to the Avro schema in `schemas/recentchange.avsc`, and writes it to `wikimedia.recentchange.raw`. The Kafka key is the wiki host (for example `en.wikipedia.org`), so one wiki's events stay in order on one partition. Events that fail parsing go to `wikimedia.recentchange.dlq` as raw JSON with the error. The producer is idempotent and waits for all in-sync replicas (`acks=all`).
+
+`ks-consume` reads the topic with a consumer group, decodes Avro through Schema Registry, and prints one line per event. Offsets are committed after each record. Useful flags:
+
+```bash
+.venv/bin/ks-produce --max-events 500
+.venv/bin/ks-consume --max-messages 20
+.venv/bin/ks-consume --from-beginning --group replay-1   # new group: read everything
+```
+
+Both stop cleanly on Ctrl-C. Run them in two terminals to watch events flow.
 
 | Service         | Host address                                   |
 |-----------------|------------------------------------------------|
@@ -48,7 +64,8 @@ All topics use replication factor 3 with `min.insync.replicas=2`, so the cluster
 ## Roadmap
 
 - [x] **Phase 1: Foundation.** Kafka cluster, topics, Schema Registry, UI, tooling
-- [ ] **Phase 2: Ingestion.** Avro schemas, Wikimedia producer, DLQ, synthetic generator
+- [x] **Phase 2a: Ingestion.** Avro schema, Wikimedia producer, DLQ, console consumer
+- [ ] **Phase 2b:** Synthetic clickstream generator for load tests
 - [ ] **Phase 3: Stream processing.** Spark to Iceberg on MinIO, windowed aggregates, watermarks, exactly-once writes
 - [ ] **Phase 4: Serving.** ClickHouse sink, Grafana dashboards
 - [ ] **Phase 5: Reliability and scale.** Lag monitoring (Prometheus), load tests, offset replay
