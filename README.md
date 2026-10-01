@@ -52,6 +52,11 @@ Inside Docker, the containers reach the brokers at `kafka-{1,2,3}:19092`.
 | `wikimedia.recentchange.raw` | 6          | Live Wikipedia edit events     |
 | `wikimedia.recentchange.dlq` | 3          | Events that failed validation  |
 | `clickstream.events`         | 12         | Synthetic load-test events     |
+| `mc.jobs.requested`          | 6          | Monte Carlo jobs from CortXplorer (key `dataset_id`) |
+| `mc.jobs.cancel`             | 3          | Monte Carlo job cancels (key `job_id`) |
+| `mc.jobs.status`             | 3          | Monte Carlo job status from the service (key `job_id`) |
+
+The three `mc.jobs.*` topics carry the CortXplorer to Monte Carlo hand-off; the message contract is in the README of the `corteXplorer_tda_demo` and `monte_carlo_simulation` repos. The compose network is named `kafka_streaming` so those stacks can join it and use `kafka-{1,2,3}:19092`.
 
 All topics use replication factor 3 with `min.insync.replicas=2`, so the cluster keeps accepting writes if one broker goes down.
 

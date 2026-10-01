@@ -110,6 +110,12 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-1:19092,kafka-2:19092,kafka-3:19092
       KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry:8081
 
+# A fixed network name, so other compose projects can join it (external: true) and reach
+# kafka-N:19092, e.g. CortXplorer and the Monte Carlo service.
+networks:
+  default:
+    name: kafka_streaming
+
 volumes:
   kafka-1-data:
   kafka-2-data:

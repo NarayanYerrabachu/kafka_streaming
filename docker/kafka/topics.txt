@@ -3,3 +3,8 @@
 wikimedia.recentchange.raw   6  3  retention.ms=604800000,min.insync.replicas=2
 wikimedia.recentchange.dlq   3  3  retention.ms=1209600000,min.insync.replicas=2
 clickstream.events          12  3  retention.ms=259200000,min.insync.replicas=2
+# Monte Carlo hand-off between CortXplorer and the Monte Carlo service (jobs are passed by reference;
+# keys: dataset_id for requests, job_id for cancel and status)
+mc.jobs.requested            6  3  retention.ms=259200000,min.insync.replicas=2
+mc.jobs.cancel               3  3  retention.ms=86400000,min.insync.replicas=2
+mc.jobs.status               3  3  retention.ms=259200000,min.insync.replicas=2
